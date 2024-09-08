@@ -174,7 +174,39 @@ class PlayState(BaseState):
                                 tile1.i,
                                 tile1.j,
                             )
-                            self.__calculate_matches([tile1, tile2])
+
+                            matches = self.board.calculate_matches_for([tile1, tile2])
+
+                            if matches is None:
+                                def bad_move():
+                                    (
+                                        self.board.tiles[tile1.i][tile1.j],
+                                        self.board.tiles[tile2.i][tile2.j],
+                                    ) = (
+                                        self.board.tiles[tile2.i][tile2.j],
+                                        self.board.tiles[tile1.i][tile1.j],
+                                    )
+                                    tile1.i, tile1.j, tile2.i, tile2.j = (
+                                        tile2.i,
+                                        tile2.j,
+                                        tile1.i,
+                                        tile1.j,
+                                    )
+                                    self.active = True
+
+                                Timer.after(
+                                    0.50,
+                                    lambda: Timer.tween(
+                                        0.25,
+                                        [
+                                            (tile1, {"x": tile2.x, "y": tile2.y}),
+                                            (tile2, {"x": tile1.x, "y": tile1.y}),
+                                        ],
+                                        on_finish=bad_move,
+                                    )
+                                )
+                            else:
+                                self.__calculate_matches([tile1, tile2])
 
                         # Swap tiles
                         Timer.tween(

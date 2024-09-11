@@ -35,6 +35,7 @@ class PlayState(BaseState):
         self.highlighted_tile = False
 
         self.active = True
+        self.band_click_pressed = False
 
         self.timer = settings.LEVEL_TIME
 
@@ -124,101 +125,154 @@ class PlayState(BaseState):
         )
 
     def on_input(self, input_id: str, input_data: InputData) -> None:
-        if not self.active:
+        if not self.active: 
             return
 
-        if input_id == "click" and input_data.pressed:
-            pos_x, pos_y = input_data.position
-            pos_x = pos_x * settings.VIRTUAL_WIDTH // settings.WINDOW_WIDTH
-            pos_y = pos_y * settings.VIRTUAL_HEIGHT // settings.WINDOW_HEIGHT
-            i = (pos_y - self.board.y) // settings.TILE_SIZE
-            j = (pos_x - self.board.x) // settings.TILE_SIZE
+        if input_id == "mouse_up": 
+            if input_data.buttons[0] == 1:
+                pos_x, pos_y = input_data.position
+                pos_x = pos_x * settings.VIRTUAL_WIDTH // settings.WINDOW_WIDTH
+                pos_y = pos_y * settings.VIRTUAL_HEIGHT // settings.WINDOW_HEIGHT
+                i = (pos_y - self.board.y) // settings.TILE_SIZE
+                j = (pos_x - self.board.x) // settings.TILE_SIZE
 
-            if 0 <= i < settings.BOARD_HEIGHT and 0 <= j < settings.BOARD_WIDTH:
-                if not self.highlighted_tile:
-                    self.highlighted_tile = True
-                    self.highlighted_i1 = i
-                    self.highlighted_j1 = j
-                else:
-                    self.highlighted_i2 = i
-                    self.highlighted_j2 = j
-                    di = abs(self.highlighted_i2 - self.highlighted_i1)
-                    dj = abs(self.highlighted_j2 - self.highlighted_j1)
+                ##mouse motion up
+                if 1 <= i < settings.BOARD_HEIGHT and 0 <= j < settings.BOARD_WIDTH:
+                    self.__mouse_moving(0, i, j) ##up 0, down 1, left 2, right 3
 
-                    if di <= 1 and dj <= 1 and di != dj:
-                        self.active = False
-                        tile1 = self.board.tiles[self.highlighted_i1][
-                            self.highlighted_j1
-                        ]
-                        tile2 = self.board.tiles[self.highlighted_i2][
-                            self.highlighted_j2
-                        ]
+        elif input_id == "mouse_down":
+            if input_data.buttons[0] == 1:
+                pos_x, pos_y = input_data.position
+                pos_x = pos_x * settings.VIRTUAL_WIDTH // settings.WINDOW_WIDTH
+                pos_y = pos_y * settings.VIRTUAL_HEIGHT // settings.WINDOW_HEIGHT
+                i = (pos_y - self.board.y) // settings.TILE_SIZE
+                j = (pos_x - self.board.x) // settings.TILE_SIZE
 
-                        def arrive():
-                            tile1 = self.board.tiles[self.highlighted_i1][
-                                self.highlighted_j1
-                            ]
-                            tile2 = self.board.tiles[self.highlighted_i2][
-                                self.highlighted_j2
-                            ]
-                            (
-                                self.board.tiles[tile1.i][tile1.j],
-                                self.board.tiles[tile2.i][tile2.j],
-                            ) = (
-                                self.board.tiles[tile2.i][tile2.j],
-                                self.board.tiles[tile1.i][tile1.j],
-                            )
-                            tile1.i, tile1.j, tile2.i, tile2.j = (
-                                tile2.i,
-                                tile2.j,
-                                tile1.i,
-                                tile1.j,
-                            )
+                ##mouse motion down
+                if 0 <= i < settings.BOARD_HEIGHT - 1 and 0 <= j < settings.BOARD_WIDTH:
+                    self.__mouse_moving(1, i, j) ##up 0, down 1, left 2, right 3
 
-                            matches = self.board.calculate_matches_for([tile1, tile2])
+        elif input_id == "mouse_left":
+            if input_data.buttons[0] == 1:
+                pos_x, pos_y = input_data.position
+                pos_x = pos_x * settings.VIRTUAL_WIDTH // settings.WINDOW_WIDTH
+                pos_y = pos_y * settings.VIRTUAL_HEIGHT // settings.WINDOW_HEIGHT
+                i = (pos_y - self.board.y) // settings.TILE_SIZE
+                j = (pos_x - self.board.x) // settings.TILE_SIZE
 
-                            if matches is None:
-                                def bad_move():
-                                    (
-                                        self.board.tiles[tile1.i][tile1.j],
-                                        self.board.tiles[tile2.i][tile2.j],
-                                    ) = (
-                                        self.board.tiles[tile2.i][tile2.j],
-                                        self.board.tiles[tile1.i][tile1.j],
-                                    )
-                                    tile1.i, tile1.j, tile2.i, tile2.j = (
-                                        tile2.i,
-                                        tile2.j,
-                                        tile1.i,
-                                        tile1.j,
-                                    )
-                                    self.active = True
+                ##mouse motion left
+                if 0 <= i < settings.BOARD_HEIGHT and 1 <= j < settings.BOARD_WIDTH:
+                    self.__mouse_moving(2, i, j) ##up 0, down 1, left 2, right 3
 
-                                Timer.after(
-                                    0.50,
-                                    lambda: Timer.tween(
-                                        0.25,
-                                        [
-                                            (tile1, {"x": tile2.x, "y": tile2.y}),
-                                            (tile2, {"x": tile1.x, "y": tile1.y}),
-                                        ],
-                                        on_finish=bad_move,
-                                    )
-                                )
-                            else:
-                                self.__calculate_matches([tile1, tile2])
+        elif input_id == "mouse_right":
+            if input_data.buttons[0] == 1:
+                pos_x, pos_y = input_data.position
+                pos_x = pos_x * settings.VIRTUAL_WIDTH // settings.WINDOW_WIDTH
+                pos_y = pos_y * settings.VIRTUAL_HEIGHT // settings.WINDOW_HEIGHT
+                i = (pos_y - self.board.y) // settings.TILE_SIZE
+                j = (pos_x - self.board.x) // settings.TILE_SIZE
 
-                        # Swap tiles
-                        Timer.tween(
+                ##mouse motion right
+                if 0 <= i < settings.BOARD_HEIGHT and 0 <= j < settings.BOARD_WIDTH - 1:
+                    self.__mouse_moving(3, i, j) ##up 0, down 1, left 2, right 3
+
+    def __mouse_moving(self, dir, i, j) -> None: ##up 0, down 1, left 2, right 3
+        if not self.highlighted_tile:
+            if dir == 0: ##up
+                self.highlighted_tile = True
+                self.highlighted_i1 = i
+                self.highlighted_j1 = j
+                self.highlighted_i2 = i - 1
+                self.highlighted_j2 = j
+                self.active = False
+            elif dir == 1: ##down:
+                self.highlighted_tile = True
+                self.highlighted_i1 = i
+                self.highlighted_j1 = j
+                self.highlighted_i2 = i + 1 
+                self.highlighted_j2 = j
+            elif dir == 2:
+                self.highlighted_tile = True
+                self.highlighted_i1 = i
+                self.highlighted_j1 = j
+                self.highlighted_i2 = i
+                self.highlighted_j2 = j- 1
+            elif dir == 3:
+                self.highlighted_tile = True
+                self.highlighted_i1 = i
+                self.highlighted_j1 = j
+                self.highlighted_i2 = i
+                self.highlighted_j2 = j + 1
+
+            tile1 = self.board.tiles[self.highlighted_i1][
+                self.highlighted_j1
+            ]
+            tile2 = self.board.tiles[self.highlighted_i2][
+                self.highlighted_j2
+            ]
+            
+            def arrive():
+                tile1 = self.board.tiles[self.highlighted_i1][
+                    self.highlighted_j1
+                ]
+                tile2 = self.board.tiles[self.highlighted_i2][
+                    self.highlighted_j2
+                ]
+                (
+                    self.board.tiles[tile1.i][tile1.j],
+                    self.board.tiles[tile2.i][tile2.j],
+                ) = (
+                    self.board.tiles[tile2.i][tile2.j],
+                    self.board.tiles[tile1.i][tile1.j],
+                )
+                (tile1.i, tile1.j, tile2.i, tile2.j) = (
+                    tile2.i,
+                    tile2.j,
+                    tile1.i,
+                    tile1.j,
+                )
+
+                matches = self.board.calculate_matches_for([tile1, tile2])
+                if matches is None:
+                    def bad_move():
+                        (
+                            self.board.tiles[tile1.i][tile1.j],
+                            self.board.tiles[tile2.i][tile2.j],
+                        ) = (
+                            self.board.tiles[tile2.i][tile2.j],
+                            self.board.tiles[tile1.i][tile1.j],
+                        )
+                        tile1.i, tile1.j, tile2.i, tile2.j = (
+                            tile2.i,
+                            tile2.j,
+                            tile1.i,
+                            tile1.j,
+                        )
+                        self.active = True
+                        self.highlighted_tile = False
+                    Timer.after(
+                        0.50,
+                        lambda: Timer.tween(
                             0.25,
                             [
                                 (tile1, {"x": tile2.x, "y": tile2.y}),
                                 (tile2, {"x": tile1.x, "y": tile1.y}),
                             ],
-                            on_finish=arrive,
+                            on_finish=bad_move,
                         )
-
+                    )
+                else:
                     self.highlighted_tile = False
+                    self.__calculate_matches([tile1, tile2])
+            # Swap tiles
+            Timer.tween(
+                0.25,
+                [
+                    (tile1, {"x": tile2.x, "y": tile2.y}),
+                    (tile2, {"x": tile1.x, "y": tile1.y}),
+                ],
+                on_finish=arrive,
+            )
 
     def __calculate_matches(self, tiles: List) -> None:
         matches = self.board.calculate_matches_for(tiles)

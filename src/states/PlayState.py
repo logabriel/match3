@@ -73,6 +73,10 @@ class PlayState(BaseState):
             settings.SOUNDS["game-over"].play()
             self.state_machine.change("game-over", score=self.score)
 
+        if self.board.band_moving:
+            if True:##self.board.is_match_board():
+                self.board.randomize_board()
+
         if self.score >= self.goal_score:
             Timer.clear()
             settings.SOUNDS["next-level"].play()
@@ -175,6 +179,9 @@ class PlayState(BaseState):
                 ##mouse motion right
                 if 0 <= i < settings.BOARD_HEIGHT and 0 <= j < settings.BOARD_WIDTH - 1:
                     self.__mouse_moving(3, i, j) ##up 0, down 1, left 2, right 3
+        ##Solo para probar la funcion randomize_board
+        elif input_id == "randomize":
+            self.board.is_match_board()
 
     def __mouse_moving(self, dir, i, j) -> None: ##up 0, down 1, left 2, right 3
         if not self.highlighted_tile:

@@ -25,6 +25,7 @@ class Board:
         self.matches: List[List[Tile]] = []
         self.tiles: List[List[Tile]] = []
         self.__initialize_tiles()
+        self.band_moving = False ##True indica cuando buscar matches
 
     def render(self, surface: pygame.Surface) -> None:
         for row in self.tiles:
@@ -208,3 +209,26 @@ class Board:
                     tweens.append((tile, {"y": tile.i * settings.TILE_SIZE}))
 
         return tweens
+
+    def randomize_board(self) -> None:
+        #change 8x8 matrix for an array
+        tiles_r = [l for row in self.tiles for l in row]
+        random.shuffle(tiles_r)
+
+        #change array to an 8x8 matrix 
+        self.tiles = [tiles_r[i * 8:(i + 1) * 8] for i in range(8)]
+
+        for i in range(settings.BOARD_HEIGHT):
+            for j in range(settings.BOARD_WIDTH):
+                self.tiles[i][j].i = i
+                self.tiles[i][j].j = j
+                self.tiles[i][j].x = j * settings.TILE_SIZE
+                self.tiles[i][j].y = i * settings.TILE_SIZE
+
+    def is_match_board(self) -> bool:
+        if self.band_moving:
+            self.band_moving = False
+        else:
+            self.band_moving = True
+        
+        self.band_moving

@@ -27,6 +27,7 @@ class Board:
         self.tiles: List[List[Tile]] = []
         self.__initialize_tiles()
         self.band_moving = False ##True indica cuando buscar matches
+        self.score_power_up = 0
 
     def render(self, surface: pygame.Surface) -> None:
         for row in self.tiles:
@@ -61,8 +62,9 @@ class Board:
                 self.tiles[i][j] = Tile(
                     i, j, color, random.randint(0, settings.NUM_VARIETIES - 1)
                 )
-        ##para generar powerUp
-        ##combinacion de 5 tiles
+        ##para generar powerUp 
+
+        #Prueba de combinacion de 5 tiles
         self.tiles[1][0] = Tile(
             1,
             0,
@@ -111,8 +113,8 @@ class Board:
             1,
             3,
         )
-        ##combinacion de 4 tiles
-        self.tiles[6][0] = Tile(
+        ##Prueba de combinacion de 4 tiles
+        """self.tiles[6][0] = Tile(
             6,
             0,
             1,
@@ -135,7 +137,34 @@ class Board:
             2,
             1,
             3,
+        )"""
+        ##prueba de power_up crus
+        """self.tiles[5][0] = Tile(
+            5,
+            0,
+            1,
+            3,
         )
+        self.tiles[5][1] = Tile(
+            5,
+            1,
+            1,
+            3,
+        )"""
+
+        ## prueba de power_up miscellaneo
+        """self.tiles[0][0] = Tile(
+            0,
+            0,
+            2,
+            3,
+        )
+        self.tiles[0][1] = Tile(
+            0,
+            1,
+            2,
+            3,
+        )"""
 
     def __calculate_match_rec(self, tile: Tile) -> Set[Tile]:
         if tile in self.in_stack:
@@ -229,7 +258,13 @@ class Board:
     def remove_matches(self) -> None:
         for match in self.matches:
             for tile in match:
-                self.tiles[tile.i][tile.j] = None
+                if not isinstance(tile, Tile_power_up):
+                    self.tiles[tile.i][tile.j] = None
+                else:
+                    if tile.variety == 0:
+                        self.__power_up_cross(tile.i, tile.j)
+                    elif tile.variety == 1:
+                        self.__power_up_miscellaneous(tile.i, tile.j)
 
         self.matches = []
 
@@ -437,7 +472,6 @@ class Board:
             and self.tiles[i + 1][j].color == color
             and self.tiles[i + 2][j].color == color
         ):
-            print("diamante 1")
             return Tile_power_up(
                 i, j, color, settings.NUM_VARIETIES_POWER_UPS - 1
             )
@@ -448,7 +482,6 @@ class Board:
             and self.tiles[i][j + 1].color == color
             and self.tiles[i][j + 2].color == color
         ):
-            print("diamante 2")
             return Tile_power_up(
                 i, j, color, settings.NUM_VARIETIES_POWER_UPS - 1
             )
@@ -458,7 +491,6 @@ class Board:
             and self.tiles[i - 2][j].color == color
             and self.tiles[i + 1][j].color == color
         ):
-            print("diamante pentagono 1")
             return Tile_power_up(
                 i, j, color, settings.NUM_VARIETIES_POWER_UPS - 2
             )
@@ -468,10 +500,35 @@ class Board:
             and self.tiles[i][j - 2].color == color
             and self.tiles[i][j + 1].color == color
         ):
-            print("diamante pentagono 2")
             return Tile_power_up(
                 i, j, color, settings.NUM_VARIETIES_POWER_UPS - 2
             )
         
         return None
 
+    def __power_up_cross(self, tile_i, tile_j):
+        self.score_power_up = 0
+        
+        for j in range(settings.BOARD_WIDTH):
+            self.tiles[tile_i][j] = None
+            self.score_power_up += 8
+        
+        for i in range(settings.BOARD_HEIGHT):
+            self.tiles[i][tile_j] = None
+            self.score_power_up += 8
+
+        self.score_power_up += 50
+
+    def __power_up_miscellaneous(self, i: int, j: int) -> None:
+        self.score_power_up = 0
+
+        color = self.tiles[i][j].color
+
+        for i in range(settings.BOARD_HEIGHT):
+            for j in range(settings.BOARD_WIDTH):
+                if self.tiles[i][j] is not None:
+                    if self.tiles[i][j].color == color:
+                        self.tiles[i][j] = None
+                        self.score_power_up += 16
+
+        self.score_power_up += 50 #por gastar el power_up

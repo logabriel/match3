@@ -19,6 +19,8 @@ from gale.timer import Timer
 
 import settings
 
+from src.Tile_power_up import Tile_power_up
+
 
 class PlayState(BaseState):
     def enter(self, **enter_params: Dict[str, Any]) -> None:
@@ -181,6 +183,7 @@ class PlayState(BaseState):
                 ##mouse motion right
                 if 0 <= i < settings.BOARD_HEIGHT and 0 <= j < settings.BOARD_WIDTH - 1:
                     self.__mouse_moving(3, i, j) ##up 0, down 1, left 2, right 3
+
         ##Solo para probar la funcion randomize_board
         """elif input_id == "randomize":
             self.board.randomize_board()"""
@@ -274,6 +277,7 @@ class PlayState(BaseState):
                 else:
                     self.highlighted_tile = False
                     self.__calculate_matches([tile1, tile2])
+
             # Swap tiles
             Timer.tween(
                 0.25,
@@ -300,6 +304,8 @@ class PlayState(BaseState):
         for match in matches:
             self.score += len(match) * 50
 
+        self.score += self.board.score_power_up
+
         self.board.remove_matches()
 
         if tile_power_up is not None:
@@ -311,7 +317,7 @@ class PlayState(BaseState):
         falling_tiles = self.board.get_falling_tiles()
 
         Timer.tween(
-            0.25,
+            0.50,
             falling_tiles,
             on_finish=lambda: self.__calculate_matches(
                 [item[0] for item in falling_tiles]

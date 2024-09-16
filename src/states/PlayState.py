@@ -35,7 +35,6 @@ class PlayState(BaseState):
         self.highlighted_tile = False
 
         self.active = True
-        self.band_click_pressed = False
 
         self.timer = settings.LEVEL_TIME
 
@@ -74,8 +73,11 @@ class PlayState(BaseState):
             self.state_machine.change("game-over", score=self.score)
 
         if self.board.band_moving:
-            if True:##self.board.is_match_board():
+            aux = self.board.is_match_board()
+            while not aux:
                 self.board.randomize_board()
+                aux = self.board.is_match_board()
+            self.board.band_moving = False
 
         if self.score >= self.goal_score:
             Timer.clear()
@@ -180,8 +182,8 @@ class PlayState(BaseState):
                 if 0 <= i < settings.BOARD_HEIGHT and 0 <= j < settings.BOARD_WIDTH - 1:
                     self.__mouse_moving(3, i, j) ##up 0, down 1, left 2, right 3
         ##Solo para probar la funcion randomize_board
-        elif input_id == "randomize":
-            self.board.is_match_board()
+        """elif input_id == "randomize":
+            self.board.randomize_board()"""
 
     def __mouse_moving(self, dir, i, j) -> None: ##up 0, down 1, left 2, right 3
         if not self.highlighted_tile:
@@ -239,7 +241,7 @@ class PlayState(BaseState):
                     tile1.j,
                 )
 
-                matches = self.board.calculate_matches_for([tile1, tile2])
+                matches = self.board.calculate_matches_for([tile2, tile1])
                 if matches is None:
                     def bad_move():
                         (
@@ -285,6 +287,7 @@ class PlayState(BaseState):
         matches = self.board.calculate_matches_for(tiles)
 
         if matches is None:
+            self.board.band_moving = True
             self.active = True
             return
 

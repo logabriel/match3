@@ -14,7 +14,7 @@ import pygame
 
 import random
 
-import settings
+import settings 
 from src.Tile import Tile
 
 
@@ -225,10 +225,131 @@ class Board:
                 self.tiles[i][j].x = j * settings.TILE_SIZE
                 self.tiles[i][j].y = i * settings.TILE_SIZE
 
+        for i in range(settings.BOARD_HEIGHT):
+            for j in range(settings.BOARD_WIDTH):
+                if self.__is_match_generated(i, j, self.tiles[i][j].color):
+                    self.randomize_board()
+                    #print("Ciclo infinito 1")
+
     def is_match_board(self) -> bool:
-        if self.band_moving:
-            self.band_moving = False
-        else:
-            self.band_moving = True
-        
-        self.band_moving
+        self.matches = []
+        for i in range(settings.BOARD_HEIGHT):
+            for j in range(settings.BOARD_WIDTH - 1):
+                self.matches = []
+                tile1 = self.tiles[i][j]
+                tile2 = self.tiles[i][j+1]
+                #swap tiles
+                (
+                    self.tiles[i][j],
+                    self.tiles[i][j + 1],
+                ) = (
+                    self.tiles[i][j + 1],
+                    self.tiles[i][j],
+                )
+                (tile1.i, tile1.j, tile2.i, tile2.j) = (
+                    tile2.i,
+                    tile2.j,
+                    tile1.i,
+                    tile1.j
+                )
+                
+                (tile1.x, tile1.y, tile2.x, tile2.y) = (
+                    tile2.x, 
+                    tile2.y, 
+                    tile1.x, 
+                    tile1.y
+                )
+                matches_h = self.calculate_matches_for([tile1, tile2])
+
+                #swap tiles
+                (
+                    self.tiles[i][j],
+                    self.tiles[i][j + 1],
+                ) = (
+                    self.tiles[i][j + 1],
+                    self.tiles[i][j],
+                )
+                (tile1.i, tile1.j, tile2.i, tile2.j) = (
+                    tile2.i,
+                    tile2.j,
+                    tile1.i,
+                    tile1.j
+                )
+                
+                (tile1.x, tile1.y, tile2.x, tile2.y) = (
+                    tile2.x, 
+                    tile2.y, 
+                    tile1.x, 
+                    tile1.y
+                )
+
+                if matches_h is None:
+                    pass
+                else:
+                    self.matches = []
+                    print("true")
+                    return True
+
+        for j in range(settings.BOARD_WIDTH):
+            for i in range(settings.BOARD_HEIGHT - 1):
+                self.matches = []
+
+                tile1 = self.tiles[i][j]
+                tile2 = self.tiles[i+1][j]
+
+                #swap tiles
+                (
+                    self.tiles[i][j],
+                    self.tiles[i+1][j],
+                ) = (
+                    self.tiles[i+1][j],
+                    self.tiles[i][j],
+                )
+                (tile1.i, tile1.j, tile2.i, tile2.j) = (
+                    tile2.i,
+                    tile2.j,
+                    tile1.i,
+                    tile1.j
+                )
+                
+                (tile1.x, tile1.y, tile2.x, tile2.y) = (
+                    tile2.x, 
+                    tile2.y, 
+                    tile1.x, 
+                    tile1.y
+                )
+
+                matches_v = self.calculate_matches_for([tile1, tile2])
+
+                #swap tiles
+                (
+                    self.tiles[i][j],
+                    self.tiles[i+1][j],
+                ) = (
+                    self.tiles[i+1][j],
+                    self.tiles[i][j],
+                )
+                (tile1.i, tile1.j, tile2.i, tile2.j) = (
+                    tile2.i,
+                    tile2.j,
+                    tile1.i,
+                    tile1.j
+                )
+                
+                (tile1.x, tile1.y, tile2.x, tile2.y) = (
+                    tile2.x, 
+                    tile2.y, 
+                    tile1.x, 
+                    tile1.y
+                )
+
+                if matches_v is None:
+                    pass
+                else:
+                    self.matches = []
+                    print("true")
+                    return True
+
+        self.matches = []
+        return False
+

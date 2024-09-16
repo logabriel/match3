@@ -28,9 +28,7 @@ input_handler.InputHandler.set_mouse_motion_action(input_handler.MOUSE_MOTION_UP
 input_handler.InputHandler.set_mouse_motion_action(input_handler.MOUSE_MOTION_DOWN, "mouse_down")
 input_handler.InputHandler.set_mouse_motion_action(input_handler.MOUSE_MOTION_LEFT, "mouse_left")
 input_handler.InputHandler.set_mouse_motion_action(input_handler.MOUSE_MOTION_RIGHT, "mouse_right")
-input_handler.InputHandler.set_keyboard_action(input_handler.KEY_k, "randomize")
-
-
+#input_handler.InputHandler.set_keyboard_action(input_handler.KEY_k, "randomize")
 
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720

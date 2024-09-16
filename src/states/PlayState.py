@@ -242,6 +242,7 @@ class PlayState(BaseState):
                 )
 
                 matches = self.board.calculate_matches_for([tile2, tile1])
+
                 if matches is None:
                     def bad_move():
                         (
@@ -291,6 +292,8 @@ class PlayState(BaseState):
             self.active = True
             return
 
+        tile_power_up = self.board.calculate_power_up(tiles[0].i, tiles[0].j)
+        
         settings.SOUNDS["match"].stop()
         settings.SOUNDS["match"].play()
 
@@ -298,6 +301,12 @@ class PlayState(BaseState):
             self.score += len(match) * 50
 
         self.board.remove_matches()
+
+        if tile_power_up is not None:
+            i = tile_power_up.i
+            j = tile_power_up.j
+
+            self.board.tiles[i][j] = tile_power_up
 
         falling_tiles = self.board.get_falling_tiles()
 

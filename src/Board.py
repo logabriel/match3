@@ -16,6 +16,7 @@ import random
 
 import settings 
 from src.Tile import Tile
+from src.Tile_power_up import Tile_power_up 
 
 
 class Board:
@@ -60,6 +61,81 @@ class Board:
                 self.tiles[i][j] = Tile(
                     i, j, color, random.randint(0, settings.NUM_VARIETIES - 1)
                 )
+        ##para generar powerUp
+        ##combinacion de 5 tiles
+        self.tiles[1][0] = Tile(
+            1,
+            0,
+            2,
+            3,
+        )
+        self.tiles[1][1] = Tile(
+            1,
+            1,
+            2,
+            3,
+        )
+        self.tiles[1][3] = Tile(
+            1,
+            3,
+            2,
+            3,
+        )
+        self.tiles[1][4] = Tile(
+            1,
+            4,
+            2,
+            3,
+        )
+        self.tiles[2][2] = Tile(
+            2,
+            2,
+            2,
+            3,
+        )
+        self.tiles[0][1] = Tile(
+            0,
+            1,
+            1,
+            3,
+        )
+        self.tiles[2][1] = Tile(
+            2,
+            1,
+            1,
+            3,
+        )
+        self.tiles[3][1] = Tile(
+            3,
+            1,
+            1,
+            3,
+        )
+        ##combinacion de 4 tiles
+        self.tiles[6][0] = Tile(
+            6,
+            0,
+            1,
+            3,
+        )
+        self.tiles[6][1] = Tile(
+            6,
+            1,
+            1,
+            3,
+        )
+        self.tiles[6][3] = Tile(
+            6,
+            3,
+            1,
+            3,
+        )
+        self.tiles[7][2] = Tile(
+            7,
+            2,
+            1,
+            3,
+        )
 
     def __calculate_match_rec(self, tile: Tile) -> Set[Tile]:
         if tile in self.in_stack:
@@ -229,7 +305,6 @@ class Board:
             for j in range(settings.BOARD_WIDTH):
                 if self.__is_match_generated(i, j, self.tiles[i][j].color):
                     self.randomize_board()
-                    #print("Ciclo infinito 1")
 
     def is_match_board(self) -> bool:
         self.matches = []
@@ -287,7 +362,6 @@ class Board:
                     pass
                 else:
                     self.matches = []
-                    print("true")
                     return True
 
         for j in range(settings.BOARD_WIDTH):
@@ -347,9 +421,57 @@ class Board:
                     pass
                 else:
                     self.matches = []
-                    print("true")
                     return True
 
         self.matches = []
         return False
+    
+    #determines when to generate a power up. Whether it is 4 tiles or 5
+    def calculate_power_up(self, i: int, j: int) -> int:
+        color = self.tiles[i][j].color
+
+        if (#power up b) of 5 tiles
+            i >= 2 and i <= 5
+            and self.tiles[i - 1][j].color == color
+            and self.tiles[i - 2][j].color == color
+            and self.tiles[i + 1][j].color == color
+            and self.tiles[i + 2][j].color == color
+        ):
+            print("diamante 1")
+            return Tile_power_up(
+                i, j, color, settings.NUM_VARIETIES_POWER_UPS - 1
+            )
+        elif (
+            j >= 2 and j <= 5
+            and self.tiles[i][j - 1].color == color
+            and self.tiles[i][j - 2].color == color
+            and self.tiles[i][j + 1].color == color
+            and self.tiles[i][j + 2].color == color
+        ):
+            print("diamante 2")
+            return Tile_power_up(
+                i, j, color, settings.NUM_VARIETIES_POWER_UPS - 1
+            )
+        elif (#power up a) of 4 tiles
+            i >= 2 and i <= 6
+            and self.tiles[i - 1][j].color == color
+            and self.tiles[i - 2][j].color == color
+            and self.tiles[i + 1][j].color == color
+        ):
+            print("diamante pentagono 1")
+            return Tile_power_up(
+                i, j, color, settings.NUM_VARIETIES_POWER_UPS - 2
+            )
+        elif (
+            j >= 2 and j <= 6
+            and self.tiles[i][j - 1].color == color
+            and self.tiles[i][j - 2].color == color
+            and self.tiles[i][j + 1].color == color
+        ):
+            print("diamante pentagono 2")
+            return Tile_power_up(
+                i, j, color, settings.NUM_VARIETIES_POWER_UPS - 2
+            )
+        
+        return None
 

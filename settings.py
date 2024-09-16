@@ -17,6 +17,7 @@ import pygame
 from gale import input_handler
 
 from src.frames_utility import generate_tile_frames
+from src.frames_utility import generate_power_up_frames
 
 input_handler.InputHandler.set_keyboard_action(input_handler.KEY_ESCAPE, "quit")
 input_handler.InputHandler.set_keyboard_action(input_handler.KEY_KP_ENTER, "enter")
@@ -42,6 +43,7 @@ BOARD_HEIGHT = 8
 TILE_SIZE = 32
 
 NUM_VARIETIES = 6
+NUM_VARIETIES_POWER_UPS = 2
 NUM_COLORS = 18
 
 BACKGROUND_SCROLL_SPEED = 40
@@ -56,9 +58,12 @@ TEXTURES = {
         BASE_DIR / "assets" / "textures" / "background.png"
     ),
     "tiles": pygame.image.load(BASE_DIR / "assets" / "textures" / "match3.png"),
+    "power_ups": pygame.image.load(BASE_DIR / "assets" / "textures" / "match3_power_ups.png"),
 }
 
-FRAMES = {"tiles": generate_tile_frames(TEXTURES["tiles"])}
+FRAMES = {"tiles": generate_tile_frames(TEXTURES["tiles"]),
+          "power_ups": generate_power_up_frames(TEXTURES["power_ups"])
+}
 
 pygame.mixer.init()
 

@@ -296,7 +296,7 @@ class PlayState(BaseState):
             self.active = True
             return
 
-        tile_power_up = self.board.calculate_power_up(tiles[0].i, tiles[0].j)
+        tile_power_up = self.board.calculate_power_up(tiles)
         
         settings.SOUNDS["match"].stop()
         settings.SOUNDS["match"].play()

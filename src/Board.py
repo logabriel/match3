@@ -68,7 +68,7 @@ class Board:
 
         ##para generar powerUp 
         #Prueba de combinacion de 5 tiles
-        """self.tiles[1][0] = Tile(
+        self.tiles[1][0] = Tile(
             1,
             0,
             2,
@@ -115,7 +115,7 @@ class Board:
             1,
             1,
             3,
-        )"""
+        )
         ##Prueba de combinacion de 4 tiles
         """self.tiles[6][0] = Tile(
             6,
@@ -465,47 +465,51 @@ class Board:
         return False
     
     #determines when to generate a power up. Whether it is 4 tiles or 5
-    def calculate_power_up(self, i: int, j: int) -> int:
-        color = self.tiles[i][j].color
+    def calculate_power_up(self, tiles) -> int:
+        
+        for l in range(2):
+            color = tiles[l].color
+            i = tiles[l].i
+            j = tiles[l].j
 
-        if (#power up b) of 5 tiles
-            i >= 2 and i <= 5
-            and self.tiles[i - 1][j].color == color
-            and self.tiles[i - 2][j].color == color
-            and self.tiles[i + 1][j].color == color
-            and self.tiles[i + 2][j].color == color
-        ):
-            return Tile_power_up(
-                i, j, color, settings.NUM_VARIETIES_POWER_UPS - 1
-            )
-        elif (
-            j >= 2 and j <= 5
-            and self.tiles[i][j - 1].color == color
-            and self.tiles[i][j - 2].color == color
-            and self.tiles[i][j + 1].color == color
-            and self.tiles[i][j + 2].color == color
-        ):
-            return Tile_power_up(
-                i, j, color, settings.NUM_VARIETIES_POWER_UPS - 1
-            )
-        elif (#power up a) of 4 tiles
-            i >= 2 and i <= 6
-            and self.tiles[i - 1][j].color == color
-            and self.tiles[i - 2][j].color == color
-            and self.tiles[i + 1][j].color == color
-        ):
-            return Tile_power_up(
-                i, j, color, settings.NUM_VARIETIES_POWER_UPS - 2
-            )
-        elif (
-            j >= 2 and j <= 6
-            and self.tiles[i][j - 1].color == color
-            and self.tiles[i][j - 2].color == color
-            and self.tiles[i][j + 1].color == color
-        ):
-            return Tile_power_up(
-                i, j, color, settings.NUM_VARIETIES_POWER_UPS - 2
-            )
+            if (#power up b) of 5 tiles
+                i >= 2 and i <= 5
+                and self.tiles[i - 1][j].color == color
+                and self.tiles[i - 2][j].color == color
+                and self.tiles[i + 1][j].color == color
+                and self.tiles[i + 2][j].color == color
+            ):
+                return Tile_power_up(
+                    i, j, color, settings.NUM_VARIETIES_POWER_UPS - 1
+                )
+            elif (
+                j >= 2 and j <= 5
+                and self.tiles[i][j - 1].color == color
+                and self.tiles[i][j - 2].color == color
+                and self.tiles[i][j + 1].color == color
+                and self.tiles[i][j + 2].color == color
+            ):
+                return Tile_power_up(
+                    i, j, color, settings.NUM_VARIETIES_POWER_UPS - 1
+                )
+            elif (#power up a) of 4 tiles
+                i >= 2 and i <= 6
+                and self.tiles[i - 1][j].color == color
+                and self.tiles[i - 2][j].color == color
+                and self.tiles[i + 1][j].color == color
+            ):
+                return Tile_power_up(
+                    i, j, color, settings.NUM_VARIETIES_POWER_UPS - 2
+                )
+            elif (
+                j >= 2 and j <= 6
+                and self.tiles[i][j - 1].color == color
+                and self.tiles[i][j - 2].color == color
+                and self.tiles[i][j + 1].color == color
+            ):
+                return Tile_power_up(
+                    i, j, color, settings.NUM_VARIETIES_POWER_UPS - 2
+                )
         
         return None
 

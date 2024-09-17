@@ -1,9 +1,3 @@
-"""
-Author: Gabriel Perez
-
-This file contains the class Tile_power_up.
-"""
-
 import pygame
 
 import settings

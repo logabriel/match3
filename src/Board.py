@@ -62,10 +62,13 @@ class Board:
                 self.tiles[i][j] = Tile(
                     i, j, color, random.randint(0, settings.NUM_VARIETIES - 1)
                 )
-        ##para generar powerUp 
+        
+        while not self.is_match_board():
+            self.randomize_board()
 
+        ##para generar powerUp 
         #Prueba de combinacion de 5 tiles
-        self.tiles[1][0] = Tile(
+        """self.tiles[1][0] = Tile(
             1,
             0,
             2,
@@ -112,7 +115,7 @@ class Board:
             1,
             1,
             3,
-        )
+        )"""
         ##Prueba de combinacion de 4 tiles
         """self.tiles[6][0] = Tile(
             6,

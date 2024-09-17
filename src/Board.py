@@ -68,7 +68,7 @@ class Board:
 
         ##para generar powerUp 
         #Prueba de combinacion de 5 tiles
-        self.tiles[1][0] = Tile(
+        """self.tiles[1][0] = Tile(
             1,
             0,
             2,
@@ -115,7 +115,7 @@ class Board:
             1,
             1,
             3,
-        )
+        )"""
         ##Prueba de combinacion de 4 tiles
         """self.tiles[6][0] = Tile(
             6,
@@ -141,7 +141,7 @@ class Board:
             1,
             3,
         )"""
-        ##prueba de power_up crus
+        ##prueba de power_up cruz
         """self.tiles[5][0] = Tile(
             5,
             0,
